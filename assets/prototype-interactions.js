@@ -64,6 +64,11 @@ export function createInteractions(React, jsx, doctorList) {
     React.useEffect(()=>{const listener=e=>{if(e.detail.screen){setState(null);onNav(e.detail.screen);}else setState(e.detail);};document.addEventListener('agiledoc-action',listener);return()=>document.removeEventListener('agiledoc-action',listener);},[onNav]);
     return state?h(Panel,{key:state.panel,state,close:()=>setState(null),onNav}):null;
   }
+  function BottomNav({screen,onNav}) {
+    const tabs=[['home','Home','M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z'],['appointments','Appointments','M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M12 7v5l3 2'],['messages','Messages','M21 11a9 9 0 0 1-9 9 10 10 0 0 1-4-.8L3 21l1.8-5A9 9 0 1 1 21 11'],['patientprofile','Profile','M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M5 21v-2a7 7 0 0 1 14 0v2']];
+    if(!tabs.some(([id])=>id===screen))return null;
+    return h('nav',{className:'demo-bottom-nav','aria-label':'Main navigation'},tabs.map(([id,label,path])=>h('button',{key:id,type:'button','aria-label':label,'aria-current':screen===id?'page':undefined,onClick:()=>onNav(id)},h('svg',{viewBox:'0 0 24 24',fill:id==='home'&&screen===id?'currentColor':'none',stroke:'currentColor',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},h('path',{d:path})))));
+  }
   function ScreenHeader({title,onNav}) {
     const svg=(children)=>h('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor',strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round','aria-hidden':true},children);
     return h('header',{className:'demo-header'},h('div',{className:'demo-header-leading'},h('button',{className:'demo-icon-button',onClick:()=>onNav('home'),'aria-label':'Back to Home'},svg(h('path',{d:'m15 18-6-6 6-6'}))),h('h2',null,title)),h('button',{className:'demo-icon-button',onClick:()=>send({panel:'notifications'}),'aria-label':'Notifications'},svg([h('path',{key:'bell',d:'M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9'}),h('path',{key:'base',d:'M10 21h4'})]),h('span',{className:'demo-notification-dot','aria-hidden':true})));
@@ -73,5 +78,5 @@ export function createInteractions(React, jsx, doctorList) {
     React.useEffect(()=>{patientName=name;patientInsurance=insurance;inbox=messages;},[name,insurance,messages]);
     return h('div',{className:'demo-screen'},h(ScreenHeader,{title:screen==='messages'?'Messages':'My profile',onNav}),screen==='messages'?h('div',null,btn('Dr. Pawan — Consultation support',()=>setOpened(!opened)),opened&&h('div',null,h('p',null,'Dr. Pawan: Hello Stella! How can I help?'),...messages.map((m,i)=>h('p',{className:'demo-bubble',key:i},m)),h('form',{onSubmit:e=>{e.preventDefault();if(text.trim()){setMessages([...messages,text.trim(),'Dr. Pawan: Thank you for your message. This is a portfolio demo.']);setText('');}}},h('label',null,'Message',h('input',{value:text,onChange:e=>setText(e.target.value),required:true})),h('button',{className:'demo-button',type:'submit'},'Send')))):h('div',null,h('div',{className:'demo-avatar'},'SL'),editing?h('form',{onSubmit:e=>{e.preventDefault();setEditing(false);}},h('label',null,'Full name',h('input',{value:name,onChange:e=>setName(e.target.value),required:true})),h('label',null,'Insurance',h('input',{value:insurance,onChange:e=>setInsurance(e.target.value)})),h('button',{type:'submit',className:'demo-button'},'Save profile')):h('div',null,h('h3',null,name),h('p',null,insurance),btn('Edit profile',()=>setEditing(true))),btn('My appointments',()=>onNav('appointments')),btn('My consultation summary',()=>onNav('postcall'))));
   }
-  return {action,Layer,ExtraScreen,ScreenHeader,go,send};
+  return {action,Layer,ExtraScreen,ScreenHeader,BottomNav,go,send};
 }
