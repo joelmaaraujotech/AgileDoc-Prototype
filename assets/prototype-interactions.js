@@ -64,6 +64,21 @@ export function createInteractions(React, jsx, doctorList) {
     React.useEffect(()=>{const listener=e=>{if(e.detail.screen){setState(null);onNav(e.detail.screen);}else setState(e.detail);};document.addEventListener('agiledoc-action',listener);return()=>document.removeEventListener('agiledoc-action',listener);},[onNav]);
     return state?h(Panel,{key:state.panel,state,close:()=>setState(null),onNav}):null;
   }
+  function StatusIcons() {
+    const svg=(label,children)=>h('svg',{viewBox:'0 0 24 18',role:'img','aria-label':label,focusable:false},children);
+    return h('div',{className:'phone-status-icons'},svg('Cellular signal',[
+      h('rect',{key:1,x:2,y:11,width:4,height:4,rx:1.5,fill:'currentColor'}),
+      h('rect',{key:2,x:8,y:8,width:4,height:7,rx:1.5,fill:'currentColor'}),
+      h('rect',{key:3,x:14,y:5,width:4,height:10,rx:1.5,fill:'currentColor'}),
+      h('rect',{key:4,x:20,y:2,width:4,height:13,rx:1.5,fill:'currentColor',opacity:.3})]),
+      svg('Wi-Fi',[
+      h('path',{key:1,d:'M2 5.5a15 15 0 0 1 20 0M5.5 9a10 10 0 0 1 13 0M9 12a5 5 0 0 1 6 0',fill:'none',stroke:'currentColor',strokeWidth:2,strokeLinecap:'round'}),
+      h('circle',{key:2,cx:12,cy:15,r:1.2,fill:'currentColor'})]),
+      svg('Battery full',[
+      h('rect',{key:1,x:1,y:3.5,width:19,height:11,rx:2.5,fill:'none',stroke:'currentColor',strokeWidth:1.5}),
+      h('rect',{key:2,x:3,y:5.5,width:15,height:7,rx:1,fill:'currentColor'}),
+      h('path',{key:3,d:'M22 7v4',stroke:'currentColor',strokeWidth:2,strokeLinecap:'round'})]));
+  }
   function BottomNav({screen,onNav}) {
     const tabs=[['home','Home','M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z'],['appointments','Appointments','M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M12 7v5l3 2'],['messages','Messages','M21 11a9 9 0 0 1-9 9 10 10 0 0 1-4-.8L3 21l1.8-5A9 9 0 1 1 21 11'],['patientprofile','Profile','M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0M5 21v-2a7 7 0 0 1 14 0v2']];
     if(!tabs.some(([id])=>id===screen))return null;
@@ -78,5 +93,5 @@ export function createInteractions(React, jsx, doctorList) {
     React.useEffect(()=>{patientName=name;patientInsurance=insurance;inbox=messages;},[name,insurance,messages]);
     return h('div',{className:'demo-screen'},h(ScreenHeader,{title:screen==='messages'?'Messages':'My profile',onNav}),screen==='messages'?h('div',null,btn('Dr. Pawan — Consultation support',()=>setOpened(!opened)),opened&&h('div',null,h('p',null,'Dr. Pawan: Hello Stella! How can I help?'),...messages.map((m,i)=>h('p',{className:'demo-bubble',key:i},m)),h('form',{onSubmit:e=>{e.preventDefault();if(text.trim()){setMessages([...messages,text.trim(),'Dr. Pawan: Thank you for your message. This is a portfolio demo.']);setText('');}}},h('label',null,'Message',h('input',{value:text,onChange:e=>setText(e.target.value),required:true})),h('button',{className:'demo-button',type:'submit'},'Send')))):h('div',null,h('div',{className:'demo-avatar'},'SL'),editing?h('form',{onSubmit:e=>{e.preventDefault();setEditing(false);}},h('label',null,'Full name',h('input',{value:name,onChange:e=>setName(e.target.value),required:true})),h('label',null,'Insurance',h('input',{value:insurance,onChange:e=>setInsurance(e.target.value)})),h('button',{type:'submit',className:'demo-button'},'Save profile')):h('div',null,h('h3',null,name),h('p',null,insurance),btn('Edit profile',()=>setEditing(true))),btn('My appointments',()=>onNav('appointments')),btn('My consultation summary',()=>onNav('postcall'))));
   }
-  return {action,Layer,ExtraScreen,ScreenHeader,BottomNav,go,send};
+  return {action,Layer,ExtraScreen,ScreenHeader,BottomNav,StatusIcons,go,send};
 }
